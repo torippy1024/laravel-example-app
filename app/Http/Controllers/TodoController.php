@@ -17,18 +17,18 @@ class TodoController extends Controller
     public function store(Request $request)
     {
         Todo::create($request->all());
-        return redirect()->back();
+        return Inertia::render('Todos/Index', ['todos' => Todo::all()]);
     }
 
     public function update(Request $request, Todo $todo)
     {
         $todo->update($request->all());
-        return redirect()->back();
+        return Inertia::render('Todos/Index', ['todos' => Todo::all()]);
     }
 
     public function destroy(Todo $todo)
     {
         $todo->delete();
-        return redirect()->back();
+        return Inertia::render('Todos/Index', ['todos' => Todo::all()]);
     }
 }

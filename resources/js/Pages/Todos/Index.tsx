@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import {PageProps} from '@/types';
 import {Head} from '@inertiajs/react';
 import {Inertia} from '@inertiajs/inertia';
@@ -9,11 +10,41 @@ interface Todo {
   description?: string;
 }
 
-export default function Index({auth, todos}: PageProps<{todos: Todo[]}>) {
+export default function Index({
+  auth,
+  todos: initialTodos,
+}: PageProps<{todos: Todo[]}>) {
+  const [todos, setTodos] = useState(initialTodos);
+
   const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this todo?')) {
-      Inertia.delete(`/todos/${id}`);
+      Inertia.delete(`/todos/${id}`, {
+        onSuccess: () => {
+          setTodos(todos.filter((todo) => todo.id !== id));
+        },
+        onError: () => console.log('error'),
+      });
     }
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const title = formData.get('title');
+
+    Inertia.post(
+      '/todos',
+      {title},
+      {
+        onSuccess: () => {
+          setTodos([
+            ...todos,
+            {id: Date.now(), title: title as string, completed: false},
+          ]); // ダミーのIDを使用
+          event.currentTarget.reset();
+        },
+      },
+    );
   };
 
   return (
@@ -45,16 +76,19 @@ export default function Index({auth, todos}: PageProps<{todos: Todo[]}>) {
         </form>
         <ul className="flex flex-col gap-2">
           {todos.map((todo) => (
-            <li key={todo.id}>
-              <div className="border p-2 rounded flex items-center justify-between hover:bg-green-50">
-                <div className="text-xl">{todo.title}</div>
-                <button
-                  className="text-gray-500 hover:bg-orange-100 rounded p-2 hover:font-bold"
-                  onClick={() => handleDelete(todo.id)}
-                >
-                  Delete
-                </button>
+            <li
+              key={todo.id}
+              className="border p-2 rounded flex items-center justify-between hover:bg-green-50"
+            >
+              <div className="text-xl">
+                {todo.id}. {todo.title}
               </div>
+              <button
+                className="text-gray-500 hover:bg-orange-100 rounded p-2 hover:font-bold"
+                onClick={() => handleDelete(todo.id)}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
@@ -62,11 +96,3 @@ export default function Index({auth, todos}: PageProps<{todos: Todo[]}>) {
     </div>
   );
 }
-
-const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  const formData = new FormData(event.currentTarget);
-  Inertia.post('/todos', {
-    title: formData.get('title'),
-  });
-};
