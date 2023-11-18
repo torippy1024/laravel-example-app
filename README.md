@@ -7,6 +7,58 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## 環境構築
+
+リポジトリをcloneする。
+```
+git clone https://github.com/torippy1024/laravel-example-app.git
+```
+
+フォルダに移動。
+```
+cd laravel-example-app
+```
+
+docker上のcomposerを使ってcomposer install
+```
+docker run --rm \
+    -u "$(id -u):$(id -g)" \
+    -v "$(pwd):/var/www/html" \
+    -w /var/www/html \
+    laravelsail/php82-composer:latest \
+    composer install --ignore-platform-reqs
+```
+
+(任意) vendor/bin/sail -> sail のエイリアスを設定
+```
+echo "alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'" >> ~/.bashrc
+```
+
+ターミナル再起動後、以下のコマンドでコンテナ立ち上げ
+```
+sail up
+```
+
+フロントエンドのdevサーバー立ち上げ
+```
+sail npm run dev
+```
+
+
+## (メモ)
+
+```
+curl -s "https://laravel.build/example-app" | bash
+cd example-app
+
+echo "alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'" >> ~/.bashrc
+sail up
+
+sail composer require laravel/breeze --dev
+sail php artisan breeze:install
+```
+
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
