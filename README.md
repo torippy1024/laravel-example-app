@@ -19,6 +19,11 @@ git clone https://github.com/torippy1024/laravel-example-app.git
 cd laravel-example-app
 ```
 
+.envをコピー
+```
+cp .env.example .env
+```
+
 docker上のcomposerを使ってcomposer install
 ```
 docker run --rm \
@@ -39,9 +44,21 @@ echo "alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'" >> ~/.bashrc
 sail up
 ```
 
-フロントエンドのdevサーバー立ち上げ
+フロントエンドインストール＆devサーバー立ち上げ
 ```
+sail npm install
 sail npm run dev
+```
+
+アプリケーションキーの作成
+```
+sail artisan key;generate
+```
+
+dbセットアップ
+```
+sail artisan migrate
+sail artisan db:seed
 ```
 
 
