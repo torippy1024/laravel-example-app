@@ -52,7 +52,7 @@ sail npm run dev
 
 アプリケーションキーの作成
 ```
-sail artisan key;generate
+sail artisan key:generate
 ```
 
 dbセットアップ
